@@ -60,7 +60,7 @@ namespace BowlingGame
         }
     }
 
-
+    
     [TestFixture]
     public class Game_should : ReportingTest<Game_should>
     {
