@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
 {
     static class RectangleExtensions
     {
-        public static PointF[] GetVertexes(this Rectangle rect, ShiftClockwise shift)
+        public static PointF[] GetVertexes(this Rectangle rect, Directions shift)
         {
             var vertexes = new List<PointF>();
             var halfWidth = (float)rect.Width / 2;
@@ -27,11 +27,11 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class RectangleExtensions_Should
     {
-        [TestCase(ShiftClockwise.Right)]
-        [TestCase(ShiftClockwise.Down)]
-        [TestCase(ShiftClockwise.Left)]
-        [TestCase(ShiftClockwise.Up)]
-        public void GetVertexesTest(ShiftClockwise shift)
+        [TestCase(Directions.Right)]
+        [TestCase(Directions.Down)]
+        [TestCase(Directions.Left)]
+        [TestCase(Directions.Up)]
+        public void GetVertexesTest(Directions shift)
         {
             var rect = new Rectangle(1, 1, 2, 2);
             var expectedVertexes = new[]
@@ -47,7 +47,68 @@ namespace TagsCloudVisualization
         }
     }
 
-    public enum ShiftClockwise
+    static class LinkedListExtensions
+    {
+        public static LinkedListNode<PointF> GetNexNode(
+            this LinkedList<PointF> linkedList, 
+            LinkedListNode<PointF> node)
+        {
+            if (node == null || node.Next == null)
+                return linkedList.First;
+            return node.Next;
+        }
+
+        public static LinkedListNode<PointF> GetPreviousNode(
+            this LinkedList<PointF> linkedList,
+            LinkedListNode<PointF> node)
+        {
+            if (node == null || node.Previous == null)
+                return linkedList.Last;
+            return node.Previous;
+        }
+    }
+
+    [TestFixture]
+    public class LinkedListExtensions_Should
+    {
+        private PointF pointF;
+        private LinkedList<PointF> linkedList;
+
+        [SetUp]
+        public void SetUp()
+        {
+            pointF = new PointF();
+            linkedList = new LinkedList<PointF>();
+        }
+
+        [Test]
+        public void GetNext_AfterLast_ReturnsFirst()
+        {
+            linkedList.AddLast(pointF);
+            linkedList.GetNexNode(linkedList.Last).Should().Be(linkedList.First);
+        }
+
+        [Test]
+        public void GetPrevious_BeforeFirst_ReturnsLast()
+        {
+            linkedList.AddFirst(pointF);
+            linkedList.GetPreviousNode(linkedList.First).Should().Be(linkedList.Last);
+        }
+
+        [Test]
+        public void GetNext_Null_When_NodeIsNull()
+        {
+            linkedList.GetNexNode(null).Should().Be(null);
+        }
+
+        [Test]
+        public void GetPrevious_Null_When_NodeIsNull()
+        {
+            linkedList.GetPreviousNode(null).Should().Be(null);
+        }
+    }
+
+    public enum Directions
     {
         Right,
         Down,
@@ -60,13 +121,13 @@ namespace TagsCloudVisualization
         public Point center { get; }
         private LinkedList<PointF> hull;
         public LinkedListNode<PointF> currentNode;
-        private ShiftClockwise shift;
+        private Directions shift;
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
             hull = new LinkedList<PointF>();
-            shift = ShiftClockwise.Right;
+            shift = Directions.Right;
             currentNode = hull.AddFirst(default(PointF));
         }
 
@@ -78,7 +139,7 @@ namespace TagsCloudVisualization
                 rect = new Rectangle(center, rectangleSize);
                 AddPointsToHull(rect, shift);
                 currentNode = hull.First;
-                shift = ShiftClockwise.Up;
+                shift = Directions.Up;
                 return rect;
             }
             var rectXY = GetRectCentre(rectangleSize);
@@ -87,13 +148,13 @@ namespace TagsCloudVisualization
             if (IsConvexAngle(currentNode.Previous.Value, currentNode.Value, currentNode.Next.Value))
             {
                 currentNode = currentNode.Next;
-                shift = (ShiftClockwise)(((int)shift + 1) % 4);
+                shift = (Directions)(((int)shift + 1) % 4);
             }
-            if (currentNode.Next != null && IsCollisionsPoints(currentNode.Value, currentNode.Next.Value, 1e-9))
-            {
-                currentNode = currentNode.Previous;
-                shift = (ShiftClockwise)(((int)shift + 1) % 4);
-            }
+//            if (currentNode.Next != null && IsCollisionsPoints(currentNode.Value, currentNode.Next.Value, 1e-9))
+//            {
+//                currentNode = currentNode.Previous;
+//                shift = (Directions)(((int)shift + 1) % 4);
+//            }
             return rect;
         }
 
@@ -101,15 +162,17 @@ namespace TagsCloudVisualization
         {
             var x = default(double);
             var y = default(double);
+            var halfWidth = (float) rectangleSize.Width / 2;
+            var halfHeight = (float) rectangleSize.Height / 2;
             switch (shift)
             {
-                case ShiftClockwise.Up:
-                    x = currentNode.Value.X + (float) rectangleSize.Width / 2;
-                    y = currentNode.Value.Y + (float) rectangleSize.Height / 2;
+                case Directions.Right:
+                    x = currentNode.Value.X + halfHeight;
+                    y = currentNode.Value.Y - halfWidth;
                     break;
-                case ShiftClockwise.Right:
-                    x = currentNode.Value.X + (float) rectangleSize.Height / 2;
-                    y = currentNode.Value.Y - (float) rectangleSize.Width / 2;
+                case Directions.Up:
+                    x = currentNode.Value.X + halfWidth;
+                    y = currentNode.Value.Y + halfHeight;
                     break;
             }
             var rectX = x >= 0 ? (int) Math.Ceiling(x) : (int) Math.Floor(x);
@@ -125,12 +188,12 @@ namespace TagsCloudVisualization
                    a.Y < b.Y && c.X > b.X;
         }
 
-        private bool IsCollisionsPoints(PointF a, PointF b, double precision)
-        {
-            return Math.Abs(a.X - b.X) < precision && Math.Abs(a.Y - b.Y) < precision;
-        }
+//        private bool IsCollisionsPoints(PointF a, PointF b, double precision)
+//        {
+//            return Math.Abs(a.X - b.X) < precision && Math.Abs(a.Y - b.Y) < precision;
+//        }
 
-        private void AddPointsToHull(Rectangle rect, ShiftClockwise shift)
+        private void AddPointsToHull(Rectangle rect, Directions shift)
         {
             var nodeBefore = currentNode;
             var vertexes = rect.GetVertexes(shift);
@@ -138,6 +201,29 @@ namespace TagsCloudVisualization
                 currentNode = hull.AddAfter(currentNode, vertex);
             hull.Remove(nodeBefore);
         }
+
+        private void ClearFromRubbishNodes()
+        {
+            while (GetDistance(hull.GetNexNode(currentNode).Value, center) < GetDistance(currentNode.Value, center) &&
+                GetAngle(hull))
+        }
+
+        private double GetDistance(PointF a, PointF b)
+        {
+            return Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
+        }
+
+        private bool LessAngle(PointF first, PointF second)
+        {
+            var firstAngle = GetAngle(first);
+            var secondAngle = GetAngle(second);
+        }
+
+        private double GetAngle(PointF p)
+        {
+            return Math.Atan2(p.Y - center.Y, p.X - center.X);
+        }
+
     }
 
     [TestFixture]
@@ -197,6 +283,17 @@ namespace TagsCloudVisualization
             ccl.PutNextRectangle(new Size(dx1, dy1));
             ccl.PutNextRectangle(new Size(dx2, dy2));
             ccl.PutNextRectangle(new Size(dx3, dy3)).Should().Be(new Rectangle(expectedX, expectedY, dx3, dy3));
+        }
+
+        [TestCase(3, -3, 6, 4, 4, 2, 2, TestName = "To3rdCorner")]
+        public void PutSeveralSameRectanglesAroundAnother(int expectedX, int expectedY, int n, int dx0, int dy0, int dx, int dy)
+        {
+            var size = new Size(dx, dy);
+            ccl.PutNextRectangle(new Size(dx0, dy0));
+            var rectResult = default(Rectangle);
+            for (var i = 0; i < n; i++)
+                rectResult = ccl.PutNextRectangle(size);
+            rectResult.Should().Be(new Rectangle(expectedX, expectedY, dx, dy));
         }
     }
 }
