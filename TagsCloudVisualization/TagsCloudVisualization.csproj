@@ -65,6 +65,7 @@
     <Folder Include="TestPictures\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="cloud.bmp" />
     <Content Include="cloud1.bmp" />
     <Content Include="cloud2.bmp" />
   </ItemGroup>
