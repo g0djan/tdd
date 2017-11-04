@@ -1,4 +1,7 @@
 # Test Driven Development
+![alt text](TagsCloudVisualization/cloud.png) 
+![alt text](TagsCloudVisualization/cloud1.png) 
+![alt text](TagsCloudVisualization/cloud2.png) 
 
 Пройдя блок, ты:
 
