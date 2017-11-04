@@ -43,6 +43,7 @@
     <Compile Include="CircularCloudLayouter_Should.cs" />
     <Compile Include="CloudDrawer.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Extensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
@@ -59,6 +60,13 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TestPictures\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="cloud1.bmp" />
+    <Content Include="cloud2.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

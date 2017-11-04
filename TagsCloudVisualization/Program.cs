@@ -14,16 +14,16 @@ namespace TagsCloudVisualization
             var cloudLayouter = new CircularCloudLayouter(new Point(512, 512));
             FillCloudWithRandom(cloudLayouter);
             var cloudDrawer = new CloudDrawer();
-            cloudDrawer.Draw(cloudLayouter);
+            cloudDrawer.Draw(cloudLayouter, "cloud.bmp");
         }
 
         static void FillCloudWithRandom(CircularCloudLayouter cloudLayouter)
         {
             var random = new Random();
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 200; i++)
             {
-                var r1 = random.Next() % 100;
-                var r2 = random.Next() % 100;
+                var r1 = 20 + random.Next() % 50;
+                var r2 = 20 + random.Next() % 50;
                 cloudLayouter.PutNextRectangle(new Size(r1, r2));
             }
         }
