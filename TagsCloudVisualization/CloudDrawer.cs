@@ -9,13 +9,13 @@ namespace TagsCloudVisualization
 {
     class CloudDrawer
     {
-        public void Draw(CircularCloudLayouter cloudLayouter, string name)
+        public Bitmap Draw(CircularCloudLayouter cloudLayouter)
         {
             var bitmap = new Bitmap(1024, 1024);
             var graphics = Graphics.FromImage(bitmap);
-            var pen = new Pen(Color.Firebrick, 5);
-            cloudLayouter.Cloud.ForEach(rectangle => graphics.DrawRectangle(pen, rectangle));
-            bitmap.Save(name);
+            var pen = new SolidBrush(Color.DarkRed);
+            cloudLayouter.Cloud.ForEach(rectangle => graphics.FillRectangle(pen, rectangle));
+            return bitmap;
         }
     }
 }
