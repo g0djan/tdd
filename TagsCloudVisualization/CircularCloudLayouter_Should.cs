@@ -32,16 +32,18 @@ namespace TagsCloudVisualization
             Console.WriteLine("Tag cloud visualization saved to file {0}", path);
         }
 
-        [Test]
-        public void FirstRectanglePlaced_Should_Be_In_OwnLeftUpCorner()
+        [TestCase(1, 1, 0, 0, TestName = "Odd sizes will round x, y to int")]
+        [TestCase(4, 4, -1, -1, TestName = "Even sizes ")]
+        public void CenterFirstRectangle_Should_Be_InIntegerCloudCenter(
+            int width, int height, int expectedX, int expectedY)
         {
             layouter = new CircularCloudLayouter(new Point(1, 1));
-            var size = new Size(1, 1);
+            var size = new Size(width, height);
             layouter.PutNextRectangle(size);
             layouter.Cloud
                 .Last()
                 .Should()
-                .Be(new Rectangle(0, 0, 1, 1));
+                .Be(new Rectangle(expectedX, expectedY, width, height));
         }
 
         [Test]
