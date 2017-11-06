@@ -2,6 +2,7 @@
 ![alt text](cloud.png) 
 ![alt text](cloud1.png) 
 ![alt text](cloud2.png) 
+![alt text](500rectangles.png) 
 
 Пройдя блок, ты:
 
