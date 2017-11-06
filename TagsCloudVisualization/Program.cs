@@ -17,10 +17,10 @@ namespace TagsCloudVisualization
         static void FillCloudWithRandom(CircularCloudLayouter cloudLayouter)
         {
             var random = new Random();
-            for (var i = 0; i < 200; i++)
+            for (var i = 0; i < 500; i++)
             {
-                var r1 = random.Next(30, 80);
-                var r2 = random.Next(30, 80);
+                var r1 = random.Next(10, 30);
+                var r2 = random.Next(10, 30);
                 cloudLayouter.PutNextRectangle(new Size(r1, r2));
             }
         }
