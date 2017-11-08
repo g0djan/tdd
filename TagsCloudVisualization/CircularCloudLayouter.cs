@@ -57,12 +57,13 @@ namespace TagsCloudVisualization
         {
             while (true)
             {
-                var forRectanglePlace = GetPointsCircleWithoutCollisions(radius, rectangleSize)
-                    .Select(p => new Point?(p))
-                    .FirstOrDefault(point => Cloud.All(rectangle =>
-                        !new Rectangle(point.Value, rectangleSize).IntersectsWith(rectangle)));
-                if (forRectanglePlace != null)
-                    return new Rectangle(forRectanglePlace.Value, rectangleSize);
+                var placeForRectangle = GetPointsCircleWithoutCollisions(radius, rectangleSize)
+                    .Select(point => new { point, rectangle = new Rectangle(point, rectangleSize) })
+                    .FirstOrDefault(namedTuple => 
+                        Cloud.All(cloudRectangle => !cloudRectangle.IntersectsWith(namedTuple.rectangle)))?
+                    .point;
+                if (placeForRectangle.HasValue)
+                    return new Rectangle(placeForRectangle.Value, rectangleSize);
                 radius++;
             }
         }
